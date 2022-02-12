@@ -26,7 +26,7 @@ const ordersRoutes = require("./routes/orders");
 const carousellRoutes = require("./routes/carousell");
 
 const api = process.env.API_URL;
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 app.use(`${api}/categories`, categoriesRoutes);
 app.use(`${api}/products`, productsRoutes);
