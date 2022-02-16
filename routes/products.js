@@ -123,7 +123,7 @@ router.put(`/:id`, uploadOptions.single('image'), async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(400).send('Invalid Product!');
 
-        const file = req.files
+        const file = req.file;
         let imagepath;
 
         if (file) {
