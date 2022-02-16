@@ -50,5 +50,5 @@ mongoose
 
 //Server
 app.listen(port , () => {
-  console.log("server is running http://localhost:"+port);
+  console.log("server is running : "+port);
 });

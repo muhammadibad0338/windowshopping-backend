@@ -32,50 +32,77 @@ const uploadOptions = multer({ storage: storage });
 
 
 router.post(`/`, uploadOptions.single('image'), async (req, res) => {
-    const product = await Product.findById(req.body.product)
-    if (!product) return res.status(400).send("Invalid product")
-    const file = req.file;
-    if (!file) return res.status(400).send('No image in the request');
+    try {
 
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+        const product = await Product.findById(req.body.product)
+        if (!product) return res.status(400).send("Invalid product")
+        const file = req.file;
+        if (!file) return res.status(400).send('No image in the request');
 
-    let carousell = new Carousell({
-        caption: req.body.caption,
-        image: `${basePath}${fileName}`, // "http://localhost:3000/public/upload/image-2323232"
-        product: req.body.product,
-    });
+        const fileName = file.filename;
+        const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
 
-    let addedCarousell = await carousell.save();
-    if (!addedCarousell) {
-        return res.status(500).json({ message: 'Carousell can not be added' })
+        let carousell = new Carousell({
+            caption: req.body.caption,
+            image: `${basePath}${fileName}`, // "http://localhost:3000/public/upload/image-2323232"
+            product: req.body.product,
+        });
+
+        let addedCarousell = await carousell.save();
+        if (!addedCarousell) {
+            return res.status(500).json({ message: 'Carousell can not be added' })
+        }
+        return res.send(addedCarousell)
     }
-    return res.send(addedCarousell)
+    catch (error) {
+        res.status(500).json({
+            message: 'fail',
+            error: err
+        })
+    }
 })
 
 router.get(`/`, async (req, res) => {
-    const carousellList = await Carousell.find();
+    try {
 
-    if (!carousellList) {
-        res.status(500).json({ success: false })
+        const carousellList = await Carousell.find();
+
+        if (!carousellList) {
+            res.status(500).json({ success: false })
+        }
+        res.status(200).send(carousellList);
     }
-    res.status(200).send(carousellList);
+    catch (error) {
+        res.status(404).json({
+            message: 'fail',
+            error
+        })
+    }
 })
 
 router.delete(`/:id`, async (req, res) => {
-    Carousell.findByIdAndRemove(req.params.id).then(carousell => {
-        if (carousell) {
-            return res.status(200).json({
-                success: true,
-                message: 'carousell deleted successfully'
-            })
-        } else {
-            return res.status(404).json({ success: false, message: "carousell not found" })
-        }
-    })
-        .catch(err => {
-            return res.status(400).json({ success: false, error: err })
+    try {
+
+        Carousell.findByIdAndRemove(req.params.id).then(carousell => {
+            if (carousell) {
+                return res.status(200).json({
+                    success: true,
+                    message: 'carousell deleted successfully'
+                })
+            } else {
+                return res.status(404).json({ success: false, message: "carousell not found" })
+            }
         })
+            .catch(err => {
+                return res.status(400).json({ success: false, error: err })
+            })
+    }
+    catch (error) {
+        res.status(404).json({
+            message: 'fail',
+            error
+        })
+    }
 })
 
 
