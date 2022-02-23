@@ -76,17 +76,18 @@ router.post(`/`, uploadOptions.single('image'), async (req, res) => {
 
         const category = await Category.findById(req.body.category)
         if (!category) return res.status(400).send("Invalid category")
-        const file = req.file;
-        if (!file) return res.status(400).send('No image in the request');
+        // const file = req.file;
+        // if (!file) return res.status(400).send('No image in the request');
 
-        const fileName = file.filename;
-        const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+        // const fileName = file.filename;
+        // const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
 
         let product = new Product({
             name: req.body.name,
             description: req.body.description,
             richDescription: req.body.richDescription,
-            image: `${basePath}${fileName}`, // "http://localhost:3000/public/upload/image-2323232"
+            // image: `${basePath}${fileName}`, // "http://localhost:3000/public/upload/image-2323232"
+            image: req.body.image,
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
@@ -123,13 +124,12 @@ router.put(`/:id`, uploadOptions.single('image'), async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(400).send('Invalid Product!');
 
-        const file = req.file;
+        // const file = req.file;
+        const image = req.body.image;
         let imagepath;
 
-        if (file) {
-            const fileName = file.filename;
-            const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-            imagepath = `${basePath}${fileName}`;
+        if (image) {
+            imagepath = image;
         } else {
             imagepath = product.image;
         }
@@ -244,13 +244,14 @@ router.put(
             if (!mongoose.isValidObjectId(req.params.id)) {
                 return res.status(400).send('Invalid Product Id');
             }
-            const files = req.files;
+            // const files = req.files;
+            // const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+            
             let imagesPaths = [];
-            const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-
-            if (files) {
-                files.map((file) => {
-                    imagesPaths.push(`${basePath}${file.filename}`);
+            const images = req.body.images;
+            if (images) {
+                images.map((image) => {
+                    imagesPaths.push(image);
                 });
             }
 
